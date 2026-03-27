@@ -1,0 +1,17 @@
+[package]
+name = "cryptix"
+version = "0.3.1"
+edition = "2021"
+authors = ["hakinexus <hakinexsus@gmail.com>"]
+description = "A state-of-the-art interactive visual encryption tool."
+
+[dependencies]
+image = "0.24"
+chacha20 = "0.9"
+rand = "0.8"
+base64 = "0.21"
+thiserror = "1.0"
+colored = "2.1"
+indicatif = "0.17"
+zeroize = { version = "1.7", features = ["derive"] }
+inquire = "0.6.2"
