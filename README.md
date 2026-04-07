@@ -1,5 +1,3 @@
-
-```markdown
 # 🛡️ Cryptix
 **State-of-the-Art Interactive Visual Encryption Suite**
 
@@ -58,7 +56,6 @@ cd cryptix
 
 # Build in release mode for maximum performance
 cargo build --release
-```
 
 The compiled binary will be located at `./target/release/cryptix`.
 
@@ -105,4 +102,3 @@ Distributed under the MIT License. See `LICENSE` for more information.
 <p align="center">
   <b>Developed with 🦀 Rust for absolute security and performance.</b>
 </p>
-```
