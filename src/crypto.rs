@@ -7,6 +7,7 @@ use crate::error::CryptixError;
 const KEY_LEN: usize = 32;
 const NONCE_LEN: usize = 24;
 const BUNDLE_LEN: usize = KEY_LEN + NONCE_LEN;
+pub const ENCODED_KEY_LEN: usize = 75;
 
 pub struct CryptoKey {
     key: [u8; KEY_LEN],

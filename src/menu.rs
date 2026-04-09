@@ -120,27 +120,36 @@ fn encrypt_flow(input_file: &str) {
     }
 }
 
-// THE GOD-LEVEL BOX ALGORITHM: Mathematically slices the key to fit ANY terminal width.
+// THE GOD-LEVEL CONTINUOUS BLOCK: Auto-copied on Termux and flawlessly double-tap-selectable layout.
 fn print_secret_key(key: &str) {
-    println!();
-    println!("  {}", "╭────── S E C R E T   K E Y ──────╮".truecolor(180, 0, 255).bold());
-    println!("  {}", "│                                 │".truecolor(180, 0, 255).bold());
-
-    // 75 chars precisely split into chunks of 25.
-    let chunks: Vec<String> = key.chars().collect::<Vec<_>>()
-        .chunks(25)
-        .map(|c| c.iter().collect())
-        .collect();
-
-    for chunk in chunks {
-        println!("  {}    {}    {}", 
-            "│".truecolor(180, 0, 255).bold(),
-            chunk.bright_white().bold(),
-            "│".truecolor(180, 0, 255).bold()
-        );
+    let mut copied = false;
+    
+    // Attempt auto-copy for Termux natively without relying on heavy external crates
+    if let Ok(mut child) = std::process::Command::new("termux-clipboard-set")
+        .stdin(std::process::Stdio::piped())
+        .stdout(std::process::Stdio::null())
+        .stderr(std::process::Stdio::null())
+        .spawn()
+    {
+        if let Some(mut stdin) = child.stdin.take() {
+            use std::io::Write;
+            if stdin.write_all(key.as_bytes()).is_ok() {
+                copied = true;
+            }
+        }
+        let _ = child.wait();
     }
 
-    println!("  {}", "│                                 │".truecolor(180, 0, 255).bold());
+    if copied {
+        println!("\n  {} {}", "✔".bright_green().bold(), "Key automatically copied to clipboard!".bright_green().bold());
+    }
+
+    println!();
+    println!("  {}", "╭────── S E C R E T   K E Y ──────╮".truecolor(180, 0, 255).bold());
+    println!();
+    // Continuous block highlighted natively without side borders for perfect "double-tap" word selection.
+    println!("  {}", key.on_truecolor(40, 40, 40).white().bold());
+    println!();
     println!("  {}", "╰─────────────────────────────────╯".truecolor(180, 0, 255).bold());
     println!("\n  {} {}", "⚠ CRITICAL:".on_red().white().bold(), "Save this key block immediately.".bright_red().bold());
     println!("  {}", "Recovery is mathematically impossible without it.\n".bright_red().bold());
@@ -159,8 +168,8 @@ fn decrypt_flow(input_file: &str) {
 
     let mut full_key = String::new();
     
-    // SMART MULTI-LINE PASTE READER: Keeps reading until it has the full 75-character payload.
-    while full_key.replace(['\n', '\r', ' ', '\t'], "").len() < 75 {
+    // SMART MULTI-LINE PASTE READER: Keeps reading until it has the full valid payload length.
+    while full_key.replace(['\n', '\r', ' ', '\t'], "").len() < crate::crypto::ENCODED_KEY_LEN {
         let input = Text::new(if full_key.is_empty() { "◈" } else { "│" }).prompt();
         match input {
             Ok(line) => full_key.push_str(&line),
