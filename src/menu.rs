@@ -1,4 +1,4 @@
-use inquire::{Select, Text, ui::{RenderConfig, Color, Styled}};
+use inquire::{Confirm, Select, Text, ui::{RenderConfig, Color, Styled}};
 use colored::*;
 use std::path::Path;
 use crate::crypto::CryptoKey;
@@ -91,8 +91,22 @@ fn generate_output_name(input: &str, suffix: &str) -> String {
     format!("{}{}.png", clean_stem, suffix)
 }
 
+fn check_overwrite(output_file: &str) -> bool {
+    if Path::new(output_file).exists() {
+        let msg = format!("File '{}' already exists. Overwrite?", output_file);
+        matches!(Confirm::new(&msg).with_default(false).prompt(), Ok(true))
+    } else {
+        true
+    }
+}
+
 fn encrypt_flow(input_file: &str) {
     let output_file = generate_output_name(input_file, "_locked");
+
+    if !check_overwrite(&output_file) {
+        println!("\n  {}", "⚠ Operation Aborted.".bright_yellow());
+        return;
+    }
 
     println!("\n  {}", " INITIALIZING ENCRYPTION MATRIX ".on_truecolor(180, 0, 255).white().bold());
     let (crypto_key, key_string) = CryptoKey::generate();
@@ -134,6 +148,11 @@ fn print_secret_key(key: &str) {
 
 fn decrypt_flow(input_file: &str) {
     let output_file = generate_output_name(input_file, "_decrypted");
+
+    if !check_overwrite(&output_file) {
+        println!("\n  {}", "⚠ Operation Aborted.".bright_yellow());
+        return;
+    }
 
     println!("\n  {}", " INITIALIZING DECRYPTION SEQUENCE ".on_truecolor(0, 200, 255).black().bold());
     println!("  {}\n", "Paste your key below. (If it spans multiple lines, paste it all and press Enter)".bright_black());
