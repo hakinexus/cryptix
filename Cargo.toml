@@ -1,6 +1,6 @@
 [package]
 name = "cryptix"
-version = "0.4.0"
+version = "0.4.3"
 edition = "2021"
 authors = ["hakinexus <hakinexsus@gmail.com>"]
 description = "A state-of-the-art interactive visual encryption tool."

@@ -25,7 +25,15 @@ fn main() {
     // High-contrast neon cyan UI core metrics
     println!();
     println!("             {}             ", " ADVANCED VISUAL ENCRYPTION SUITE ".on_truecolor(0, 210, 255).black().bold());
-    println!("                 {}                 \n", "V E R S I O N   0 . 4 . 0".truecolor(100, 100, 100).bold());
+    
+    let version = env!("CARGO_PKG_VERSION");
+    let version_spaced = version.chars()
+        .map(|c| c.to_string())
+        .collect::<Vec<String>>()
+        .join(" . "); // Styled spacing for the version numbers
+    
+    let display_version = format!("V E R S I O N   {}", version_spaced);
+    println!("                 {}                 \n", display_version.truecolor(100, 100, 100).bold());
     
     // Launch the God-Level Terminal UI
     menu::start_interactive_menu();
