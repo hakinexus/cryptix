@@ -6,9 +6,9 @@ use crate::image_ops;
 
 pub fn setup_theme() {
     let mut config = RenderConfig::default();
-    config.prompt_prefix = Styled::new("◈").with_fg(Color::LightMagenta);
-    config.answered_prompt_prefix = Styled::new("✓").with_fg(Color::DarkGrey);
-    config.highlighted_option_prefix = Styled::new(" ❯").with_fg(Color::LightCyan);
+    config.prompt_prefix = Styled::new(" ⚡ ").with_fg(Color::LightCyan);
+    config.answered_prompt_prefix = Styled::new(" ✔ ").with_fg(Color::LightGreen);
+    config.highlighted_option_prefix = Styled::new("  ❯❯ ").with_fg(Color::LightMagenta);
     inquire::set_global_render_config(config);
 }
 
@@ -34,14 +34,14 @@ pub fn start_interactive_menu() {
     setup_theme();
     loop {
         println!("\n");
-        let options = vec!["◈ Target Image File", "◈ Manual & Help", "✕ Terminate Session"];
-        let choice = Select::new(":: SYSTEM COMMAND ::", options).prompt();
+        let options = vec!["Target Image File", "Manual & Help", "Terminate Session"];
+        let choice = Select::new("SYSTEM COMMAND", options).prompt();
 
         match choice {
-            Ok("◈ Target Image File") => handle_image_selection(),
-            Ok("◈ Manual & Help") => print_help(),
-            Ok("✕ Terminate Session") | Err(_) => {
-                println!("\n  {}\n", " Session Terminated. Stay Secure. ".on_black().white().bold());
+            Ok("Target Image File") => handle_image_selection(),
+            Ok("Manual & Help") => print_help(),
+            Ok("Terminate Session") | Err(_) => {
+                println!("\n  {}\n", " CONNECTION TERMINATED. STAY SECURE. ".on_black().truecolor(100, 100, 100).bold());
                 break;
             }
             _ => {}
@@ -62,12 +62,12 @@ fn handle_image_selection() {
         Err(_) => return, 
     };
 
-    println!("\n  {} {}\n", "TARGET ACQUIRED:".bright_black().bold(), selected_file.bright_white().bold());
+    println!("\n  {} {}\n", "TARGET ACQUIRED:".truecolor(100, 100, 100).bold(), selected_file.bright_white().bold());
 
-    let actions = vec!["🔒 Encrypt (Lock Data)", "🔓 Decrypt (Unlock Data)", "↩ Return to Menu"];
+    let actions = vec!["Encrypt (Lock Data)", "Decrypt (Unlock Data)", "Return to Menu"];
     match Select::new("Select Processing Mode:", actions).prompt() {
-        Ok("🔒 Encrypt (Lock Data)") => encrypt_flow(&selected_file),
-        Ok("🔓 Decrypt (Unlock Data)") => decrypt_flow(&selected_file),
+        Ok("Encrypt (Lock Data)") => encrypt_flow(&selected_file),
+        Ok("Decrypt (Unlock Data)") => decrypt_flow(&selected_file),
         _ => {}
     }
 }
@@ -108,7 +108,7 @@ fn encrypt_flow(input_file: &str) {
         return;
     }
 
-    println!("\n  {}", " INITIALIZING ENCRYPTION MATRIX ".on_truecolor(180, 0, 255).white().bold());
+    println!("\n  {}", " INITIALIZING ENCRYPTION MATRIX ".on_truecolor(200, 0, 255).white().bold());
     let (crypto_key, key_string) = CryptoKey::generate();
 
     match image_ops::encrypt_image(input_file, &output_file, &crypto_key) {
@@ -144,15 +144,16 @@ fn print_secret_key(key: &str) {
         println!("\n  {} {}", "✔".bright_green().bold(), "Key automatically copied to clipboard!".bright_green().bold());
     }
 
+    let top = format!("╭{} S E C R E T   K E Y {}╮", "─".repeat(27), "─".repeat(27));
+    let bottom = format!("╰{}╯", "─".repeat(75));
+
     println!();
-    println!("  {}", "╭────── S E C R E T   K E Y ──────╮".truecolor(180, 0, 255).bold());
-    println!();
+    println!("  {}", top.truecolor(200, 0, 255).bold());
     // Continuous block highlighted natively without side borders for perfect "double-tap" word selection.
-    println!("  {}", key.on_truecolor(40, 40, 40).white().bold());
-    println!();
-    println!("  {}", "╰─────────────────────────────────╯".truecolor(180, 0, 255).bold());
+    println!("  {}", key.on_truecolor(20, 20, 20).truecolor(0, 255, 255).bold());
+    println!("  {}", bottom.truecolor(200, 0, 255).bold());
     println!("\n  {} {}", "⚠ CRITICAL:".on_red().white().bold(), "Save this key block immediately.".bright_red().bold());
-    println!("  {}", "Recovery is mathematically impossible without it.\n".bright_red().bold());
+    println!("  {}", "Recovery is mathematically impossible without it.\n".truecolor(150, 150, 150));
 }
 
 fn decrypt_flow(input_file: &str) {
@@ -163,8 +164,8 @@ fn decrypt_flow(input_file: &str) {
         return;
     }
 
-    println!("\n  {}", " INITIALIZING DECRYPTION SEQUENCE ".on_truecolor(0, 200, 255).black().bold());
-    println!("  {}\n", "Paste your key below. (If it spans multiple lines, paste it all and press Enter)".bright_black());
+    println!("\n  {}", " INITIALIZING DECRYPTION SEQUENCE ".on_truecolor(0, 210, 255).black().bold());
+    println!("  {}\n", "Paste your key below. (If it spans multiple lines, paste it all and press Enter)".truecolor(100, 100, 100));
 
     let mut full_key = String::new();
     
@@ -201,9 +202,9 @@ fn decrypt_flow(input_file: &str) {
 }
 
 fn print_help() {
-    println!("\n  {}", "=== CRYPTIX MANUAL ===".bright_cyan().bold());
-    println!("  ◈ Select {} to scan for files in this folder.", "'Target Image File'".bright_white());
-    println!("  ◈ Select your image, and explicitly choose to Encrypt or Decrypt.");
-    println!("  ◈ Output files will append {} or {} safely.", "_locked.png".bright_magenta(), "_decrypted.png".bright_cyan());
-    println!("  ◈ Keys are output in multi-line blocks for mobile safety. Copy the whole block.");
+    println!("\n  {}", "=== C R Y P T I X   M A N U A L ===".on_truecolor(0, 50, 100).truecolor(0, 255, 255).bold());
+    println!("  {} Select {} to scan for files in this folder.", "⚡".truecolor(0, 255, 255), "'Target Image File'".bright_white());
+    println!("  {} Select your image, and explicitly choose to Encrypt or Decrypt.", "⚡".truecolor(0, 255, 255));
+    println!("  {} Output files will append {} or {} safely.", "⚡".truecolor(0, 255, 255), "_locked.png".truecolor(200, 0, 255), "_decrypted.png".truecolor(0, 255, 255));
+    println!("  {} Keys are output in multi-line blocks for mobile safety. Copy the whole block.", "⚡".truecolor(0, 255, 255));
 }

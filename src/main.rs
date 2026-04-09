@@ -6,23 +6,27 @@ mod menu;
 use colored::*;
 
 fn main() {
-    // 2026 Sleek Cyber-Aesthetic Banner
+    // God-Level 2026 Cyber-Aesthetic Banner
     let banner = r#"
-   ██████╗██████╗ ██╗   ██╗██████╗ ████████╗██╗██╗  ██╗
-  ██╔════╝██╔══██╗╚██╗ ██╔╝██╔══██╗╚══██╔══╝██║╚██╗██╔╝
-  ██║     ██████╔╝ ╚████╔╝ ██████╔╝   ██║   ██║ ╚███╔╝ 
-  ██║     ██╔══██╗  ╚██╔╝  ██╔═══╝    ██║   ██║ ██╔██╗ 
-  ╚██████╗██║  ██║   ██║   ██║        ██║   ██║██╔╝ ██╗
-   ╚═════╝╚═╝  ╚═╝   ╚═╝   ╚═╝        ╚═╝   ╚═╝╚═╝  ╚═╝
-"#;
+      ██████╗██████╗ ██╗   ██╗██████╗ ████████╗██╗██╗  ██╗
+     ██╔════╝██╔══██╗╚██╗ ██╔╝██╔══██╗╚══██╔══╝██║╚██╗██╔╝
+     ██║     ██████╔╝ ╚████╔╝ ██████╔╝   ██║   ██║ ╚███╔╝ 
+     ██║     ██╔══██╗  ╚██╔╝  ██╔═══╝    ██║   ██║ ██╔██╗ 
+     ╚██████╗██║  ██║   ██║   ██║        ██║   ██║██╔╝ ██╗
+      ╚═════╝╚═╝  ╚═╝   ╚═╝   ╚═╝        ╚═╝   ╚═╝╚═╝  ╚═╝"#;
 
-    // Vivid Neon Purple/Magenta styling for the primary logo
-    println!("{}", banner.truecolor(180, 0, 255).bold());
+    println!();
+    for line in banner.lines() {
+        if !line.is_empty() {
+            println!("  {}", line.truecolor(200, 0, 255).bold());
+        }
+    }
     
-    // High-contrast neon cyan for the sub-banner
-    println!("      {}      ", " ADVANCED VISUAL ENCRYPTION SUITE ".on_truecolor(0, 200, 255).black().bold());
-    println!("             {}             \n", "VERSION 0.4.0".bright_black().bold());
+    // High-contrast neon cyan UI core metrics
+    println!();
+    println!("             {}             ", " ADVANCED VISUAL ENCRYPTION SUITE ".on_truecolor(0, 210, 255).black().bold());
+    println!("                 {}                 \n", "V E R S I O N   0 . 4 . 0".truecolor(100, 100, 100).bold());
     
-    // Launch the TUI
+    // Launch the God-Level Terminal UI
     menu::start_interactive_menu();
 }
