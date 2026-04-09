@@ -74,8 +74,20 @@ fn handle_image_selection() {
 
 fn generate_output_name(input: &str, suffix: &str) -> String {
     let path = Path::new(input);
-    let stem = path.file_stem().unwrap().to_string_lossy().to_string();
-    let clean_stem = stem.replace("_locked", "").replace("_decrypted", "");
+    let stem = path.file_stem().unwrap().to_string_lossy();
+    let mut clean_stem = stem.as_ref();
+    
+    // Iteratively strip trailing status suffixes to prevent accumulation and avoid the greedy replace bug
+    loop {
+        if let Some(s) = clean_stem.strip_suffix("_locked") {
+            clean_stem = s;
+        } else if let Some(s) = clean_stem.strip_suffix("_decrypted") {
+            clean_stem = s;
+        } else {
+            break;
+        }
+    }
+    
     format!("{}{}.png", clean_stem, suffix)
 }
 
