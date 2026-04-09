@@ -27,10 +27,8 @@ fn main() {
     println!("             {}             ", " ADVANCED VISUAL ENCRYPTION SUITE ".on_truecolor(0, 210, 255).black().bold());
     
     let version = env!("CARGO_PKG_VERSION");
-    let version_spaced = version.chars()
-        .map(|c| c.to_string())
-        .collect::<Vec<String>>()
-        .join(" . "); // Styled spacing for the version numbers
+    // Replace the dots with spaced dots instead of spacing every character
+    let version_spaced = version.replace(".", " . ");
     
     let display_version = format!("V E R S I O N   {}", version_spaced);
     println!("                 {}                 \n", display_version.truecolor(100, 100, 100).bold());
