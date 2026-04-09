@@ -15,3 +15,4 @@ colored = "2.1"
 indicatif = "0.17"
 zeroize = { version = "1.7", features = ["derive"] }
 inquire = "0.6.2"
+crossterm = "0.25.0"

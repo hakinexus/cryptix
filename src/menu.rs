@@ -144,14 +144,22 @@ fn print_secret_key(key: &str) {
         println!("\n  {} {}", "✔".bright_green().bold(), "Key automatically copied to clipboard!".bright_green().bold());
     }
 
-    let top = format!("╭{} S E C R E T   K E Y {}╮", "─".repeat(27), "─".repeat(27));
-    let bottom = format!("╰{}╯", "─".repeat(75));
-
+    let term_width = crossterm::terminal::size().map(|(w, _)| w as usize).unwrap_or(80);
+    
     println!();
-    println!("  {}", top.truecolor(200, 0, 255).bold());
-    // Continuous block highlighted natively without side borders for perfect "double-tap" word selection.
-    println!("  {}", key.on_truecolor(20, 20, 20).truecolor(0, 255, 255).bold());
-    println!("  {}", bottom.truecolor(200, 0, 255).bold());
+    if term_width >= 79 {
+        let top = format!("╭{} S E C R E T   K E Y {}╮", "─".repeat(27), "─".repeat(27));
+        let bottom = format!("╰{}╯", "─".repeat(75));
+
+        println!("  {}", top.truecolor(200, 0, 255).bold());
+        // Continuous block highlighted natively without side borders for perfect "double-tap" word selection.
+        println!("  {}", key.on_truecolor(20, 20, 20).truecolor(0, 255, 255).bold());
+        println!("  {}", bottom.truecolor(200, 0, 255).bold());
+    } else {
+        println!("  {}", "=== S E C R E T   K E Y ===".truecolor(200, 0, 255).bold());
+        println!("  {}", key.on_truecolor(20, 20, 20).truecolor(0, 255, 255).bold());
+        println!("  {}", "===========================".truecolor(200, 0, 255).bold());
+    }
     println!("\n  {} {}", "⚠ CRITICAL:".on_red().white().bold(), "Save this key block immediately.".bright_red().bold());
     println!("  {}", "Recovery is mathematically impossible without it.\n".truecolor(150, 150, 150));
 }
