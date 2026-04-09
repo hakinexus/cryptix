@@ -5,7 +5,13 @@ mod menu;
 
 use colored::*;
 
+use std::io::{self, Write};
+
 fn main() {
+    // Clear terminal screen for a premium experience
+    print!("\x1B[2J\x1B[1;1H");
+    let _ = io::stdout().flush();
+    
     // God-Level 2026 Cyber-Aesthetic Banner
     let banner = r#"
       ██████╗██████╗ ██╗   ██╗██████╗ ████████╗██╗██╗  ██╗
