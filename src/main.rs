@@ -8,8 +8,8 @@ use colored::*;
 use std::io::{self, Write};
 
 fn main() {
-    // Clear terminal screen for a premium experience
-    print!("\x1B[2J\x1B[1;1H");
+    // Clear terminal and scrollback buffer for a true premium experience
+    print!("\x1B[H\x1B[2J\x1B[3J");
     let _ = io::stdout().flush();
     
     // God-Level 2026 Cyber-Aesthetic Banner
