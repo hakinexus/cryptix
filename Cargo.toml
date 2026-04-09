@@ -1,13 +1,13 @@
 [package]
 name = "cryptix"
-version = "0.3.1"
+version = "0.4.0"
 edition = "2021"
 authors = ["hakinexus <hakinexsus@gmail.com>"]
 description = "A state-of-the-art interactive visual encryption tool."
 
 [dependencies]
 image = "0.24"
-chacha20 = "0.9"
+chacha20poly1305 = "0.10"
 rand = "0.8"
 base64 = "0.21"
 thiserror = "1.0"

@@ -111,7 +111,7 @@ fn encrypt_flow(input_file: &str) {
     println!("\n  {}", " INITIALIZING ENCRYPTION MATRIX ".on_truecolor(180, 0, 255).white().bold());
     let (crypto_key, key_string) = CryptoKey::generate();
 
-    match image_ops::process_image(input_file, &output_file, &crypto_key, "Encrypting") {
+    match image_ops::encrypt_image(input_file, &output_file, &crypto_key) {
         Ok(_) => {
             println!("  {} Image secured: {}", "✔".bright_green(), output_file.bright_cyan().bold());
             print_secret_key(&key_string);
@@ -186,9 +186,15 @@ fn decrypt_flow(input_file: &str) {
     };
 
     println!();
-    match image_ops::process_image(input_file, &output_file, &crypto_key, "Decrypting") {
+    match image_ops::decrypt_image(input_file, &output_file, &crypto_key) {
         Ok(_) => {
             println!("  {} Authorization successful. Restored to: {}", "✔".bright_green(), output_file.bright_cyan().bold());
+        }
+        Err(crate::error::CryptixError::TamperedData) => {
+            println!("\n  {}", " ██ INTEGRITY VIOLATION DETECTED ██ ".on_red().white().bold());
+            println!("  {}", "This file has been tampered with or corrupted.".bright_red().bold());
+            println!("  {}", "The Poly1305 authentication seal does NOT match.".bright_red());
+            println!("  {}", "Decryption has been DENIED to protect your data.\n".bright_red());
         }
         Err(e) => println!("\n  {} {}", "❌ Error:".bright_red().bold(), e),
     }

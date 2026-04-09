@@ -13,4 +13,7 @@ pub enum CryptixError {
     
     #[error("Output MUST be saved as a lossless format (.png).")]
     LossyFormat,
+
+    #[error("INTEGRITY FAILURE: Data has been tampered with or corrupted!")]
+    TamperedData,
 }

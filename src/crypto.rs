@@ -1,4 +1,7 @@
-use chacha20::{XChaCha20, cipher::{KeyIvInit, StreamCipher}};
+use chacha20poly1305::{
+    XChaCha20Poly1305, XNonce,
+    aead::{Aead, KeyInit},
+};
 use rand::{rngs::OsRng, RngCore};
 use base64::{Engine as _, engine::general_purpose::URL_SAFE_NO_PAD};
 use zeroize::Zeroize;
@@ -8,6 +11,9 @@ const KEY_LEN: usize = 32;
 const NONCE_LEN: usize = 24;
 const BUNDLE_LEN: usize = KEY_LEN + NONCE_LEN;
 pub const ENCODED_KEY_LEN: usize = 75;
+
+/// The Poly1305 authentication tag length in bytes.
+pub const TAG_LEN: usize = 16;
 
 pub struct CryptoKey {
     key: [u8; KEY_LEN],
@@ -33,7 +39,7 @@ impl CryptoKey {
         bundle[..KEY_LEN].copy_from_slice(&key);
         bundle[KEY_LEN..].copy_from_slice(&nonce);
         
-        let encoded = URL_SAFE_NO_PAD.encode(&bundle);
+        let encoded = URL_SAFE_NO_PAD.encode(bundle);
         bundle.zeroize(); 
         
         (Self { key, nonce }, encoded)
@@ -59,8 +65,42 @@ impl CryptoKey {
         Ok(Self { key, nonce })
     }
 
-    pub fn apply_keystream(&self, data: &mut [u8]) {
-        let mut cipher = XChaCha20::new(&self.key.into(), &self.nonce.into());
-        cipher.apply_keystream(data);
+    /// Encrypts plaintext bytes using XChaCha20-Poly1305 (AEAD).
+    ///
+    /// Returns a tuple of `(ciphertext, tag)` where:
+    /// - `ciphertext` has the same length as the input plaintext
+    /// - `tag` is the 16-byte Poly1305 authentication seal
+    pub fn encrypt(&self, plaintext: &[u8]) -> (Vec<u8>, [u8; TAG_LEN]) {
+        let cipher = XChaCha20Poly1305::new(&self.key.into());
+        let nonce = XNonce::from_slice(&self.nonce);
+
+        // The AEAD crate returns ciphertext || tag (tag is the last 16 bytes)
+        let combined = cipher.encrypt(nonce, plaintext)
+            .expect("AEAD encryption failure: this should never happen with valid inputs");
+
+        // Separate the ciphertext from the appended Poly1305 tag
+        let tag_start = combined.len() - TAG_LEN;
+        let mut tag = [0u8; TAG_LEN];
+        tag.copy_from_slice(&combined[tag_start..]);
+
+        let ciphertext = combined[..tag_start].to_vec();
+        (ciphertext, tag)
+    }
+
+    /// Decrypts ciphertext using XChaCha20-Poly1305 (AEAD) with tag verification.
+    ///
+    /// If even a single byte of the ciphertext was tampered with, the Poly1305
+    /// tag will mismatch and this function returns `CryptixError::TamperedData`.
+    pub fn decrypt(&self, ciphertext: &[u8], tag: &[u8; TAG_LEN]) -> Result<Vec<u8>, CryptixError> {
+        let cipher = XChaCha20Poly1305::new(&self.key.into());
+        let nonce = XNonce::from_slice(&self.nonce);
+
+        // Reconstruct the combined payload: ciphertext || tag
+        let mut combined = Vec::with_capacity(ciphertext.len() + TAG_LEN);
+        combined.extend_from_slice(ciphertext);
+        combined.extend_from_slice(tag);
+
+        cipher.decrypt(nonce, combined.as_ref())
+            .map_err(|_| CryptixError::TamperedData)
     }
 }

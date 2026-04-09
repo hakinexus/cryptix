@@ -21,7 +21,7 @@ fn main() {
     
     // High-contrast neon cyan for the sub-banner
     println!("      {}      ", " ADVANCED VISUAL ENCRYPTION SUITE ".on_truecolor(0, 200, 255).black().bold());
-    println!("             {}             \n", "VERSION 0.3.0".bright_black().bold());
+    println!("             {}             \n", "VERSION 0.4.0".bright_black().bold());
     
     // Launch the TUI
     menu::start_interactive_menu();
